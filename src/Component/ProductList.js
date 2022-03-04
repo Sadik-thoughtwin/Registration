@@ -2,8 +2,10 @@ import React from "react";
 import Header from "./Header";
 import { useState, useEffect } from "react";
 import { Table, Button } from "react-bootstrap";
+import { Spin } from "antd";
 
 export default function ProductList() {
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState();
   const [del, setDel] = useState(false);
   const [email, setEmail] = useState("");
@@ -11,29 +13,27 @@ export default function ProductList() {
 
   useEffect(async () => {
     //getting product data through api
-    let result = await fetch("https://cowardly-firefox-58.loca.lt/getAll", {
+    let result = await fetch("https://slimy-mouse-25.loca.lt/getAll", {
       headers: {
         authorization: localStorage.getItem("itemName"),
         "Content-Type": "application/json",
         Accept: "application/json",
       },
     });
-    console.log("result-------", result);
     result = await result.json();
-    console.log("result======>", result.createuser);
-    setData(result.createuser);
+    setData(result);
+    setLoading(false);
   }, [del]);
 
   const deleteUser = (_id) => {
-    fetch(`https://cowardly-firefox-58.loca.lt/delete/${_id}`, {
+    setLoading(true);
+    fetch(`https://slimy-mouse-25.loca.lt/delete/${_id}`, {
       method: "DELETE",
     })
       .then((res) => {
         setDel(!del);
       })
-      .catch((error) => {
-        console.log("error", error);
-      });
+      .catch((error) => {});
   };
 
   const updateUser = (_id, email) => {
@@ -42,7 +42,8 @@ export default function ProductList() {
   };
 
   function update(id) {
-    fetch(`https://cowardly-firefox-58.loca.lt/update/${id}`, {
+    setLoading(true);
+    fetch(`https://slimy-mouse-25.loca.lt/update/${id}`, {
       method: "PATCH",
       body: JSON.stringify({
         email,
@@ -52,63 +53,76 @@ export default function ProductList() {
       },
     })
       .then((update) => {
-        console.log("update", update);
         setDel(!del);
       })
 
       .catch((error) => {
         console.log("error", error);
       });
+    setEmail("");
   }
 
   return (
     <>
-      <Header />
-
-      <h1>Product List</h1>
-      <Table border="1">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        {data?.map((item, id) => {
-          return (
-            <tbody key={id}>
+      {loading ? (
+        <div className="spinner">
+          <Spin />
+        </div>
+      ) : (
+        <div>
+          <Header />
+          <h1>Product List</h1>
+          <Table border="1">
+            <thead>
               <tr>
-                <td>{item._id}</td>
-                <td>{item.email}</td>
-                <td>
-                  <Button
-                    onClick={() => updateUser(item._id, item.email)}
-                    className="btn btn-success "
-                  >
-                    Update
-                  </Button>
-                </td>
-                <td>
-                  <Button
-                    onClick={() => deleteUser(item._id)}
-                    className="btn btn-danger "
-                  >
-                    Delete
-                  </Button>
-                </td>
+                <th>ID</th>
+                <th>Email</th>
               </tr>
-            </tbody>
-          );
-        })}
-      </Table>
-      <input
-        type="text"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        palceholder="enter update email"
-      />
-      <Button onClick={() => update(id)} className="btn btn-success ">
-        Update
-      </Button>
+            </thead>
+            {data?.map((item, id) => {
+              return (
+                <tbody key={id}>
+                  <tr>
+                    <td>{item._id}</td>
+                    <td>{item.email}</td>
+                    <td>
+                      <Button
+                        onClick={() => updateUser(item._id, item.email)}
+                        title="update"
+                        className="btn btn-success "
+                      >
+                        Edit
+                      </Button>
+                    </td>
+                    <td>
+                      <Button
+                        onClick={() => deleteUser(item._id)}
+                        title="delete"
+                        className="btn btn-danger"
+                      >
+                        delete
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              );
+            })}
+          </Table>
+          <input
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            palceholder="enter update email"
+          />
+          <Button
+            onClick={() => update(id)}
+            value={email}
+            className="btn btn-success "
+          >
+            Edit
+          </Button>
+        </div>
+      )}
     </>
   );
 }
