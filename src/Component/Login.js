@@ -23,15 +23,15 @@ export default function Login() {
       password,
     };
 
-    await fetch("https://tasty-turtle-46.loca.lt/login", {
+    await fetch("https://slimy-mouse-25.loca.lt/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(item),
     })
       .then((result) => {
         // result.json(),
-        console.log("result>>>>>>>>>>>>>", result.createuser);
-        console.log("result----------->>", result.message);
+        console.log("result", result);
+        // console.log("result---", result.message);
         dispatch(itemData(result.data));
         localStorage.setItem("itemName", result.token);
       })

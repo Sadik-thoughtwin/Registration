@@ -4,6 +4,7 @@ import axios from "axios";
 import Header from "./Header";
 import { useDispatch } from "react-redux";
 import itemData from "../actions";
+import { Spin } from 'antd';
 
 export default function Register() {
   // const selector = useSelector((state) => state.reducer.id);
@@ -13,9 +14,8 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password_confirmation, setPassword_confirmation] = useState("");
   const navigate = useNavigate();
-  // console.log("selector--->",selector)
-
-  useEffect(() => {
+ 
+useEffect(() => {
     if (localStorage.getItem("user-info")) {
       navigate("/add");
     }
@@ -29,7 +29,7 @@ export default function Register() {
       password_confirmation,
     };
     const message = ''
-    let result = await fetch("https://tasty-turtle-46.loca.lt/create", {
+    let result = await fetch("https://slimy-mouse-25.loca.lt/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export default function Register() {
     });
     result = await result.json();
     dispatch(itemData());
-    alert(result.message)
+    // alert(result.message)
     console.log("result=====", message);
     localStorage.setItem("user-info", JSON.stringify(item));
     navigate("/add");
